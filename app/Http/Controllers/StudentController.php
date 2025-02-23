@@ -48,7 +48,7 @@ class StudentController extends Controller
 
         $student->update($validatedData);
         return response()->json([
-            'message' => 'Employee updated successfully',
+            'message' => 'Student updated successfully',
             'employee' => $student]);
     }
 
