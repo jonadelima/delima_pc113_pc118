@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\UserDashboardController;
 
 Route::get('/employees', [EmployeeController::class, 'index']);
 Route::get('/students', [StudentController::class, 'index']);
@@ -24,3 +25,10 @@ Route::delete('/students/{id}', [StudentController::class, 'delete']);
 Route::post('/login', [AuthController::class, 'login']);
 
 
+Route::middleware(['auth:sanctum', 'role:0'])->get('/users', [AuthController::class, 'index']);
+Route::middleware(['auth:sanctum', 'role:1'])->get('/udashboard', [UserDashboardController::class, 'index']);
+
+
+Route::get('unknown', function () {
+    return response()->json(['message' => 'ok']);
+});
