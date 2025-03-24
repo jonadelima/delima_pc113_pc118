@@ -76,6 +76,6 @@
                 alert("An error occurred. Please try again later.");
             }
         });
-    </script>
+    </script> 
 </body>
 </html>
