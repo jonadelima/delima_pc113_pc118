@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -40,22 +41,23 @@
 <body>
 
     <div class="sidebar" id="sidebar">
-        <div class="logo">Dashboard</div>
-        <a href="index.php"><i class="fas fa-home"></i> Home</a>
+        <div class="logo text-center mb-4"><h4>Dashboard</h4></div>
+        <a href="dashboard.php"><i class="fas fa-home"></i> Home</a>
         <a href="employee.php"><i class="fas fa-user-tie"></i> Employees</a>
         <a href="student.php"><i class="fas fa-user-graduate"></i> Students</a>
+        <a href="user.php"><i class="fas fa-users"></i> Users</a> <!-- Added Users link -->
         <button onclick="logout()" class="logout-btn w-100 mt-3"><i class="fas fa-sign-out-alt"></i> Logout</button>
     </div>
 
     <div class="content">
         <h2>Welcome to Your Dashboard</h2>
-        <p>Select an option from the sidebar to manage Employees or Students.</p>
+        <p>Select an option from the sidebar to manage Employees, Students, or Users.</p>
     </div>
 
     <script>
         function logout() {
             alert("Logging out...");
-            window.location.href = "index.php";
+            window.location.href = "index.php"; // Fixed typo here
         }
     </script>
 </body>

@@ -43,6 +43,7 @@
         <a href="dashboard.php"><i class="fas fa-home"></i> Home</a>
         <a href="employee.php"><i class="fas fa-user-tie"></i> Employees</a>
         <a href="student.php"><i class="fas fa-user-graduate"></i> Students</a>
+        <a href="user.php"><i class="fas fa-user-graduate"></i> Users</a>
     </div>
 
     <div class="content">
