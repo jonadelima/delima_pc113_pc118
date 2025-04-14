@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
@@ -21,22 +22,20 @@ class UserController extends Controller
     }
 
     public function store(Request $request)
-{
-    $validated = $request->validate([
-        'name' => 'required|string',
-        'email' => 'required|email|unique:users,email',
-        'role' => 'required|string',
-        'password' => 'required|string|min:6'
-    ]);
+    {
+        $validated = $request->validate([
+            'name' => 'required|string',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|string|min:6',
+            'role' => 'required|string',
+        ]);
 
-    $validated['password'] = bcrypt($validated['password']);
+        $validated['password'] = Hash::make($validated['password']);
 
-    $user = User::create($validated);
+        $user = User::create($validated);
 
-    return response()->json(['message' => 'User added successfully!', 'user' => $user]);
-}
-
-
+        return response()->json(['message' => 'User added successfully!', 'user' => $user]);
+    }
 
     public function update(Request $request, $id)
     {
@@ -66,4 +65,3 @@ class UserController extends Controller
         return response()->json(['message' => 'User deleted successfully']);
     }
 }
-

@@ -10,22 +10,12 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserDashboardController;
 use App\Http\Controllers\UserController;
 
-
-
-
-// Login Route (no auth)
-Route::post('/login', [AuthController::class, 'login']);
-
-// Public route — anyone can fetch
-Route::get('/users', [UserController::class, 'index']);
-
-// Protected routes
 Route::middleware(['auth:sanctum'])->group(function () {
-    Route::post('/users', [UserController::class, 'store']);
-    Route::put('/users/{id}', [UserController::class, 'update']);
-    Route::delete('/users/{id}', [UserController::class, 'delete']);
+    Route::get('/users', [UserController::class, 'index']);       // List users
+    Route::post('/users', [UserController::class, 'store']);      // Add user
+    Route::put('/users/{id}', [UserController::class, 'update']); // Update user
+    Route::delete('/users/{id}', [UserController::class, 'delete']); // Delete user
 });
-
 
 Route::get('/employees', [EmployeeController::class, 'index']);
 Route::get('/students', [StudentController::class, 'index']);

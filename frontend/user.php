@@ -81,6 +81,7 @@
                         <input type="text" id="addUserName" class="form-control mb-2" placeholder="Name" required>
                         <input type="email" id="addUserEmail" class="form-control mb-2" placeholder="Email" required>
                         <input type="text" id="addUserRole" class="form-control mb-2" placeholder="Role" required>
+                        <input type="password" id="addUserPassword" class="form-control mb-2" placeholder="Password" required>
                         <button type="submit" class="btn btn-success w-100">Add</button>
                     </form>
                 </div>
@@ -111,10 +112,17 @@
 
     <script>
 
-$(document).ready(function () {
-    // Fetch and display users
-    function loadUsers() {
-        $.get('http://localhost:8000/api/users', function (users) {
+document.addEventListener("DOMContentLoaded", function () {
+    const token = localStorage.getItem('token');
+
+    function loadUsers(search = '') {
+        fetch(`http://localhost:8000/api/users?search=${encodeURIComponent(search)}`, {
+            headers: {
+                'Authorization': 'Bearer ' + token
+            }
+        })
+        .then(response => response.json())
+        .then(users => {
             let rows = '';
             users.forEach((user, index) => {
                 rows += `
@@ -127,119 +135,111 @@ $(document).ready(function () {
                             <button class="btn btn-sm btn-warning edit-btn" data-id="${user.id}" data-name="${user.name}" data-email="${user.email}" data-role="${user.role}">Edit</button>
                             <button class="btn btn-sm btn-danger delete-btn" data-id="${user.id}">Delete</button>
                         </td>
-                    </tr>
-                `;
+                    </tr>`;
             });
-            $('#usersTable').html(rows);
-        });
+            document.getElementById('usersTable').innerHTML = rows;
+        })
+        .catch(error => alert('Error fetching users: ' + error.message));
     }
 
     loadUsers();
 
     // Add User
-    $('#addUserForm').submit(function (e) {
+    document.getElementById('addUserForm').addEventListener('submit', function (e) {
         e.preventDefault();
-
         const data = {
-            name: $('#addUserName').val(),
-            email: $('#addUserEmail').val(),
-            role: $('#addUserRole').val()
-        };
+    name: document.getElementById('addUserName').value,
+    email: document.getElementById('addUserEmail').value,
+    password: document.getElementById('addUserPassword').value,
+    role: document.getElementById('addUserRole').value
+};
+  
 
-        $.ajax({
-            url: 'http://localhost:8000/api/users',
-            type: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify(data),
-            success: function (response) {
-                $('#addUserModal').modal('hide');
-                loadUsers();
-                alert(response.message);
-                $('#addUserForm')[0].reset();
+        fetch('http://localhost:8000/api/users', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + token
             },
-            error: function (xhr) {
-                alert('Error adding user: ' + xhr.responseJSON.message);
-            }
-        });
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(response => {
+            new bootstrap.Modal(document.getElementById('addUserModal')).hide();
+            loadUsers();
+            alert(response.message);
+            document.getElementById('addUserForm').reset();
+        })
+        .catch(error => alert('Error adding user: ' + error.message));
     });
 
     // Open Edit Modal
-    $(document).on('click', '.edit-btn', function () {
-        $('#editUserId').val($(this).data('id'));
-        $('#editUserName').val($(this).data('name'));
-        $('#editUserEmail').val($(this).data('email'));
-        $('#editUserRole').val($(this).data('role'));
-        $('#editUserModal').modal('show');
+    document.addEventListener('click', function (e) {
+        if (e.target.classList.contains('edit-btn')) {
+            document.getElementById('editUserId').value = e.target.dataset.id;
+            document.getElementById('editUserName').value = e.target.dataset.name;
+            document.getElementById('editUserEmail').value = e.target.dataset.email;
+            document.getElementById('editUserRole').value = e.target.dataset.role;
+            new bootstrap.Modal(document.getElementById('editUserModal')).show();
+        }
     });
 
     // Update User
-    $('#editUserForm').submit(function (e) {
+    document.getElementById('editUserForm').addEventListener('submit', function (e) {
         e.preventDefault();
-
-        const id = $('#editUserId').val();
+        const id = document.getElementById('editUserId').value;
         const data = {
-            name: $('#editUserName').val(),
-            email: $('#editUserEmail').val(),
-            role: $('#editUserRole').val()
+            name: document.getElementById('editUserName').value,
+            email: document.getElementById('editUserEmail').value,
+            role: document.getElementById('editUserRole').value
         };
 
-        $.ajax({
-            url: `http://localhost:8000/api/users/${id}`,
-            type: 'PUT',
-            contentType: 'application/json',
-            data: JSON.stringify(data),
-            success: function (response) {
-                $('#editUserModal').modal('hide');
-                loadUsers();
-                alert(response.message);
+        fetch(`http://localhost:8000/api/users/${id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + token
             },
-            error: function (xhr) {
-                alert('Error updating user: ' + xhr.responseJSON.message);
-            }
-        });
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(response => {
+            new bootstrap.Modal(document.getElementById('editUserModal')).hide();
+            loadUsers();
+            alert(response.message);
+        })
+        .catch(error => alert('Error updating user: ' + error.message));
     });
 
     // Delete User
-    $(document).on('click', '.delete-btn', function () {
-        if (confirm('Are you sure you want to delete this user?')) {
-            const id = $(this).data('id');
-            $.ajax({
-                url: `http://localhost:8000/api/users/${id}`,
-                type: 'DELETE',
-                success: function (response) {
+    document.addEventListener('click', function (e) {
+        if (e.target.classList.contains('delete-btn')) {
+            if (confirm('Are you sure you want to delete this user?')) {
+                const id = e.target.dataset.id;
+
+                fetch(`http://localhost:8000/api/users/${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': 'Bearer ' + token
+                    }
+                })
+                .then(response => response.json())
+                .then(response => {
                     loadUsers();
                     alert(response.message);
-                },
-                error: function (xhr) {
-                    alert('Error deleting user: ' + xhr.responseJSON.message);
-                }
-            });
+                })
+                .catch(error => alert('Error deleting user: ' + error.message));
+            }
         }
     });
 
     // Search Users
-    $('#searchInput').on('input', function () {
-        const search = $(this).val();
-        $.get(`http://localhost:8000/api/users?search=${search}`, function (users) {
-            let rows = '';
-            users.forEach((user, index) => {
-                rows += `
-                    <tr>
-                        <td>${index + 1}</td>
-                        <td>${user.name}</td>
-                        <td>${user.email}</td>
-                        <td>${user.role}</td>
-                        <td>
-                            <button class="btn btn-sm btn-warning edit-btn" data-id="${user.id}" data-name="${user.name}" data-email="${user.email}" data-role="${user.role}">Edit</button>
-                            <button class="btn btn-sm btn-danger delete-btn" data-id="${user.id}">Delete</button>
-                        </td>
-                    </tr>
-                `;
-            });
-            $('#usersTable').html(rows);
-        });
+    document.getElementById('searchInput').addEventListener('input', function () {
+        loadUsers(this.value);
     });
 });
+
+
 
        
     </script>
