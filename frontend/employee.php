@@ -7,6 +7,8 @@
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://kit.fontawesome.com/a076d05399.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <style>
         body {
             display: flex;
@@ -44,6 +46,8 @@
         <a href="employee.php"><i class="fas fa-user-tie"></i> Employees</a>
         <a href="student.php"><i class="fas fa-user-graduate"></i> Students</a>
         <a href="user.php"><i class="fas fa-user-graduate"></i> Users</a>
+        <a href="settings.php"><i class="fas fa-cog"></i> Settings</a>
+
     </div>
 
     <div class="content">
@@ -160,35 +164,64 @@
         }
 
         $('#addEmployeeForm').submit(function (event) {
-            event.preventDefault();
-            const name = $('#addEmpName').val();
-            const email = $('#addEmpEmail').val();
-            const position = $('#addEmpPosition').val();
+    event.preventDefault();
+    const name = $('#addEmpName').val();
+    const email = $('#addEmpEmail').val();
+    const position = $('#addEmpPosition').val();
 
-            $.ajax({
-                url: 'http://127.0.0.1:8000/api/employees',
-                method: 'POST',
-                headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') },
-                data: { name, email, position },
-                success: function () {
-                    fetchEmployees();
-                    $('#addEmployeeForm')[0].reset();
-                    $('#addEmployeeModal').modal('hide');
-                }
+    $.ajax({
+        url: 'http://127.0.0.1:8000/api/employees',
+        method: 'POST',
+        headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') },
+        data: { name, email, position },
+        success: function () {
+            fetchEmployees();
+            $('#addEmployeeForm')[0].reset();
+            $('#addEmployeeModal').modal('hide');
+            Swal.fire({
+                icon: 'success',
+                title: 'Employee Added!',
+                text: `${name} has been successfully added.`,
+                timer: 1500,
+                showConfirmButton: false
             });
-        });
+        }
+    });
+});
 
-        function deleteEmployee(id) {
-            if (!confirm("Are you sure?")) return;
+
+function deleteEmployee(id) {
+    const emp = employees.find(e => e.id === id);
+    if (!emp) return Swal.fire('Error', 'Employee not found.', 'error');
+
+    Swal.fire({
+        title: `Delete ${emp.name}?`,
+        text: "This action cannot be undone.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Yes, delete it!'
+    }).then((result) => {
+        if (result.isConfirmed) {
             $.ajax({
                 url: `http://127.0.0.1:8000/api/employees/${id}`,
                 method: 'DELETE',
                 headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') },
                 success: function () {
                     fetchEmployees();
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Deleted!',
+                        text: `${emp.name} has been deleted.`,
+                        timer: 1500,
+                        showConfirmButton: false
+                    });
                 }
             });
         }
+    });
+}
 
         function openEditModal(id) {
             const emp = employees.find(e => e.id === id);
