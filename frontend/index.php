@@ -86,40 +86,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+    <title>Login - Task Assignment System</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
-            background-color: #f5f5f5; 
-            color: #333;
+            background: linear-gradient(to right, #4e73df, #224abe);
+            min-height: 100vh;
             display: flex;
-            justify-content: center;
             align-items: center;
-            height: 100vh;
+            justify-content: center;
+            margin: 0;
         }
         .login-container {
-            background-color: #3a3a3a; 
+            background: white;
             padding: 2rem;
-            border-radius: 10px;
-            box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
+            border-radius: 15px;
+            box-shadow: 0px 5px 25px rgba(0, 0, 0, 0.2);
             width: 350px;
             text-align: center;
         }
         .login-title {
-            color: #ffffff;
+            color: #4e73df;
+            font-weight: bold;
+            font-size: 1.8rem;
         }
         .form-control {
-            background-color: #f5f5f5;
-            border: none;
-            color: #333;
-        }
-        .form-control::placeholder {
-            color: rgba(39, 35, 35, 0.6);
+            margin-bottom: 15px;
         }
         .btn-custom {
-            background-color: #ffffff; 
+            background-color: #4e73df;
             border: none;
-            color: #333;
+            color: #fff;
             font-weight: bold;
             padding: 10px;
             border-radius: 8px;
@@ -127,58 +124,66 @@
             transition: 0.3s;
         }
         .btn-custom:hover {
-            background-color:rgb(149, 144, 144);
+            background-color: #3c5bdc;
         }
         .forgot-password {
-            color: #cccccc;
+            color: #555;
             text-decoration: none;
         }
         .forgot-password:hover {
             text-decoration: underline;
         }
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #4e73df;
+            margin-bottom: 20px;
+        }
     </style>
 </head>
 <body>
     <div class="login-container">
+        <div class="logo">Task Assignment System</div>
         <h2 class="mb-4 login-title">User Login</h2>
         <form id="loginForm">
-            <div class="mb-3">
-                <input type="email" class="form-control" id="email" placeholder="Enter email" required>
-            </div>
-            <div class="mb-3">
-                <input type="password" class="form-control" id="password" placeholder="Enter password" required>
-            </div>
+            <input type="email" class="form-control" id="email" placeholder="Enter email" required>
+            <input type="password" class="form-control" id="password" placeholder="Enter password" required>
             <button type="submit" class="btn btn-custom w-100">Login</button>
         </form>
-        <p class="mt-3"><a href="#" class="forgot-password">Forgot Password?</a></p>
+        <p class="mt-3">
+            <a href="#" class="forgot-password">Forgot Password?</a>
+        </p>
+        <p class="mt-2 text-muted">Don't have an account? <a href="signup.php">Sign up here</a></p>
     </div>
 
     <script>
     document.getElementById("loginForm").addEventListener("submit", async function(event) {
-        event.preventDefault();
-        const email = document.getElementById("email").value;
-        const password = document.getElementById("password").value;
+    event.preventDefault();
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
 
-        try {
-            const response = await fetch("http://127.0.0.1:8000/api/login", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email, password })
-            });
+    try {
+        const response = await fetch("http://127.0.0.1:8000/api/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, password })
+        });
 
-            const data = await response.json();
+        const data = await response.json();
 
-            if (response.ok) {
-                localStorage.setItem("token", data.token);
-                window.location.href = "dashboard.php"; 
-            } else {
-                alert(data.message || "Invalid email or password");
-            }
-        } catch (error) {
-            console.error("Error:", error);
-            alert("An error occurred. Please try again later.");
+        if (response.ok) {
+            localStorage.setItem("token", data.token);
+            localStorage.setItem("role", data.user.role); // 👈 Save the role in local storage
+            window.location.href = "dashboard.php";
+        } else {
+            alert(data.error || "Invalid email or password");
         }
-    });
+    } catch (error) {
+        console.error("Error:", error);
+        alert("An error occurred. Please try again later.");
+    }
+});
+
     </script>
 </body>
 </html>

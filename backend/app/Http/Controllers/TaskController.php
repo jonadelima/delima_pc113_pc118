@@ -1,8 +1,7 @@
 <?php
-
 namespace App\Http\Controllers;
-use App\Models\Task;
 
+use App\Models\Task;
 use Illuminate\Http\Request;
 
 class TaskController extends Controller
@@ -10,20 +9,29 @@ class TaskController extends Controller
     public function index() {
         return Task::all();
     }
-    
+
     public function store(Request $request) {
-        $task = Task::create($request->all());
-        return response()->json($task, 201);
+        $task = new Task;
+        $task->title = $request->title;
+        $task->description = $request->description;
+        $task->assigned_by = 'Admin';  // or get from logged in user
+        $task->due_date = $request->due_date;
+        $task->save();
+
+        return response()->json(['message' => 'Task added successfully'], 201);
     }
-    
+
     public function update(Request $request, $id) {
         $task = Task::findOrFail($id);
         $task->update($request->all());
-        return response()->json($task);
+        return response()->json(['message' => 'Task updated successfully']);
     }
     
+
     public function destroy($id) {
-        Task::destroy($id);
-        return response()->json(null, 204);
+        $task = Task::findOrFail($id);
+        $task->delete();
+
+        return response()->json(['message' => 'Task deleted successfully']);
     }
 }

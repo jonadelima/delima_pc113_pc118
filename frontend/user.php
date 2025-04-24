@@ -6,7 +6,6 @@
     <title>Users</title>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://kit.fontawesome.com/a076d05399.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         body {
@@ -25,7 +24,9 @@
         .sidebar a {
             color: white;
             padding: 15px;
-            display: block;
+            display: flex;
+            align-items: center;
+            gap: 10px;
             text-decoration: none;
         }
         .sidebar a:hover {
@@ -36,15 +37,25 @@
             padding: 20px;
             width: 100%;
         }
+        .logo {
+            font-size: 1.5rem;
+            text-align: center;
+            padding-bottom: 20px;
+        }
+        svg {
+            width: 1em;
+            height: 1em;
+        }
     </style>
 </head>
 <body>
     <div class="sidebar">
         <div class="logo">Dashboard</div>
-        <a href="dashboard.php"><i class="fas fa-home"></i> Home</a>
-        <a href="employee.php"><i class="fas fa-user-tie"></i> Employees</a>
-        <a href="student.php"><i class="fas fa-user-graduate"></i> Students</a>
-        <a href="user.php"><i class="fas fa-users"></i> Users</a>
+        <a href="dashboard.php"><?php echo file_get_contents("https://cdn.jsdelivr.net/npm/bootstrap-icons/icons/house-door.svg"); ?> Home</a>
+        <a href="employee.php"><?php echo file_get_contents("https://cdn.jsdelivr.net/npm/bootstrap-icons/icons/person-badge.svg"); ?> Employees</a>
+        <a href="student.php"><?php echo file_get_contents("https://cdn.jsdelivr.net/npm/bootstrap-icons/icons/mortarboard.svg"); ?> Students</a>
+        <a href="user.php"><?php echo file_get_contents("https://cdn.jsdelivr.net/npm/bootstrap-icons/icons/people.svg"); ?> Users</a>
+        <a href="task.php"><?php echo file_get_contents("https://cdn.jsdelivr.net/npm/bootstrap-icons/icons/journal-check.svg"); ?> Task Assignment</a>
     </div>
 
     <div class="content">
@@ -112,178 +123,138 @@
     </div>
 
     <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const token = localStorage.getItem('token');
 
-document.addEventListener("DOMContentLoaded", function () {
-    const token = localStorage.getItem('token');
-
-    function loadUsers(search = '') {
-        fetch(`http://localhost:8000/api/users?search=${encodeURIComponent(search)}`, {
-            headers: {
-                'Authorization': 'Bearer ' + token
-            }
-        })
-        .then(response => response.json())
-        .then(users => {
-            let rows = '';
-            users.forEach((user, index) => {
-                rows += `
-                    <tr>
-                        <td>${index + 1}</td>
-                        <td>${user.name}</td>
-                        <td>${user.email}</td>
-                        <td>${user.role}</td>
-                        <td>
-                            <button class="btn btn-sm btn-warning edit-btn" data-id="${user.id}" data-name="${user.name}" data-email="${user.email}" data-role="${user.role}">Edit</button>
-                            <button class="btn btn-sm btn-danger delete-btn" data-id="${user.id}">Delete</button>
-                        </td>
-                    </tr>`;
-            });
-            document.getElementById('usersTable').innerHTML = rows;
-        })
-        .catch(error => alert('Error fetching users: ' + error.message));
-    }
-
-    loadUsers();
-
-    // Add User
-
-    document.getElementById('addUserForm').addEventListener('submit', function (e) {
-    e.preventDefault();
-    const data = {
-        name: document.getElementById('addUserName').value,
-        email: document.getElementById('addUserEmail').value,
-        password: document.getElementById('addUserPassword').value,
-        role: document.getElementById('addUserRole').value
-    };
-
-    fetch('http://localhost:8000/api/users', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer ' + token
-        },
-        body: JSON.stringify(data)
-    })
-    .then(response => response.json())
-    .then(response => {
-        bootstrap.Modal.getInstance(document.getElementById('addUserModal')).hide();
-        loadUsers();
-        Swal.fire('Success!', response.message, 'success');
-        document.getElementById('addUserForm').reset();
-    })
-    .catch(error => Swal.fire('Error!', 'Error adding user: ' + error.message, 'error'));
-});
-
-//     document.getElementById('addUserForm').addEventListener('submit', function (e) {
-//         e.preventDefault();
-//         const data = {
-//     name: document.getElementById('addUserName').value,
-//     email: document.getElementById('addUserEmail').value,
-//     password: document.getElementById('addUserPassword').value,
-//     role: document.getElementById('addUserRole').value
-// };
-  
-
-//         fetch('http://localhost:8000/api/users', {
-//             method: 'POST',
-//             headers: {
-//                 'Content-Type': 'application/json',
-//                 'Authorization': 'Bearer ' + token
-//             },
-//             body: JSON.stringify(data)
-//         })
-//         .then(response => response.json())
-//         .then(response => {
-//             new bootstrap.Modal(document.getElementById('addUserModal')).hide();
-//             loadUsers();
-//             alert(response.message);
-//             document.getElementById('addUserForm').reset();
-//         })
-//         .catch(error => alert('Error adding user: ' + error.message));
-//     });
-
-    // Open Edit Modal
-    document.addEventListener('click', function (e) {
-        if (e.target.classList.contains('edit-btn')) {
-            document.getElementById('editUserId').value = e.target.dataset.id;
-            document.getElementById('editUserName').value = e.target.dataset.name;
-            document.getElementById('editUserEmail').value = e.target.dataset.email;
-            document.getElementById('editUserRole').value = e.target.dataset.role;
-            new bootstrap.Modal(document.getElementById('editUserModal')).show();
+        function loadUsers(search = '') {
+            fetch(`http://localhost:8000/api/users?search=${encodeURIComponent(search)}`, {
+                headers: { 'Authorization': 'Bearer ' + token }
+            })
+            .then(response => response.json())
+            .then(users => {
+                let rows = '';
+                users.forEach((user, index) => {
+                    rows += `
+                        <tr>
+                            <td>${index + 1}</td>
+                            <td>${user.name}</td>
+                            <td>${user.email}</td>
+                            <td>${user.role}</td>
+                            <td>
+                                <button class="btn btn-sm btn-warning edit-btn" data-id="${user.id}" data-name="${user.name}" data-email="${user.email}" data-role="${user.role}">Edit</button>
+                                <button class="btn btn-sm btn-danger delete-btn" data-id="${user.id}">Delete</button>
+                            </td>
+                        </tr>`;
+                });
+                document.getElementById('usersTable').innerHTML = rows;
+            })
+            .catch(error => alert('Error fetching users: ' + error.message));
         }
-    });
 
-    // Update User
-    document.getElementById('editUserForm').addEventListener('submit', function (e) {
-    e.preventDefault();
-    const id = document.getElementById('editUserId').value;
-    const data = {
-        name: document.getElementById('editUserName').value,
-        email: document.getElementById('editUserEmail').value,
-        role: document.getElementById('editUserRole').value
-    };
-
-    fetch(`http://localhost:8000/api/users/${id}`, {
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer ' + token
-        },
-        body: JSON.stringify(data)
-    })
-    .then(response => response.json())
-    .then(response => {
-        bootstrap.Modal.getInstance(document.getElementById('editUserModal')).hide();
         loadUsers();
-        Swal.fire('Success!', response.message, 'success');
-    })
-    .catch(error => Swal.fire('Error!', 'Error updating user: ' + error.message, 'error'));
-});
 
+        // Add User
+        document.getElementById('addUserForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const data = {
+                name: document.getElementById('addUserName').value,
+                email: document.getElementById('addUserEmail').value,
+                password: document.getElementById('addUserPassword').value,
+                role: document.getElementById('addUserRole').value
+            };
 
-    // Delete User
-    document.addEventListener('click', function (e) {
-    if (e.target.classList.contains('delete-btn')) {
-        Swal.fire({
-            title: 'Are you sure?',
-            text: "This user will be deleted permanently!",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#d33',
-            cancelButtonColor: '#6c757d',
-            confirmButtonText: 'Yes, delete it!'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                const id = e.target.dataset.id;
+            fetch('http://localhost:8000/api/users', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + token
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(response => {
+                bootstrap.Modal.getInstance(document.getElementById('addUserModal')).hide();
+                loadUsers();
+                Swal.fire('Success!', response.message, 'success');
+                document.getElementById('addUserForm').reset();
+            })
+            .catch(error => Swal.fire('Error!', 'Error adding user: ' + error.message, 'error'));
+        });
 
-                fetch(`http://localhost:8000/api/users/${id}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'Authorization': 'Bearer ' + token
-                    }
-                })
-                .then(response => response.json())
-                .then(response => {
-                    loadUsers();
-                    Swal.fire('Deleted!', response.message, 'success');
-                })
-                .catch(error => Swal.fire('Error!', 'Error deleting user: ' + error.message, 'error'));
+        // Edit Button
+        document.addEventListener('click', function (e) {
+            if (e.target.classList.contains('edit-btn')) {
+                document.getElementById('editUserId').value = e.target.dataset.id;
+                document.getElementById('editUserName').value = e.target.dataset.name;
+                document.getElementById('editUserEmail').value = e.target.dataset.email;
+                document.getElementById('editUserRole').value = e.target.dataset.role;
+                new bootstrap.Modal(document.getElementById('editUserModal')).show();
             }
         });
-    }
-});
 
-    // Search Users
-    document.getElementById('searchInput').addEventListener('input', function () {
-        loadUsers(this.value);
+        // Update User
+        document.getElementById('editUserForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const id = document.getElementById('editUserId').value;
+            const data = {
+                name: document.getElementById('editUserName').value,
+                email: document.getElementById('editUserEmail').value,
+                role: document.getElementById('editUserRole').value
+            };
+
+            fetch(`http://localhost:8000/api/users/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + token
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(response => {
+                bootstrap.Modal.getInstance(document.getElementById('editUserModal')).hide();
+                loadUsers();
+                Swal.fire('Success!', response.message, 'success');
+            })
+            .catch(error => Swal.fire('Error!', 'Error updating user: ' + error.message, 'error'));
+        });
+
+        // Delete User
+        document.addEventListener('click', function (e) {
+            if (e.target.classList.contains('delete-btn')) {
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "This user will be deleted permanently!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Yes, delete it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        const id = e.target.dataset.id;
+
+                        fetch(`http://localhost:8000/api/users/${id}`, {
+                            method: 'DELETE',
+                            headers: { 'Authorization': 'Bearer ' + token }
+                        })
+                        .then(response => response.json())
+                        .then(response => {
+                            loadUsers();
+                            Swal.fire('Deleted!', response.message, 'success');
+                        })
+                        .catch(error => Swal.fire('Error!', 'Error deleting user: ' + error.message, 'error'));
+                    }
+                });
+            }
+        });
+
+        // Search Users
+        document.getElementById('searchInput').addEventListener('input', function () {
+            loadUsers(this.value);
+        });
     });
-});
-
-
-
-       
     </script>
-
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

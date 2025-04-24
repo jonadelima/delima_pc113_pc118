@@ -44,6 +44,9 @@
         <a href="employee.php"><i class="fas fa-user-tie"></i> Employees</a>
         <a href="student.php"><i class="fas fa-user-graduate"></i> Students</a>
         <a href="user.php"><i class="fas fa-user-graduate"></i> Users</a>
+        <!-- <a href="settings.php"><i class="fas fa-cog"></i> Settings</a> -->
+        <a class="nav-link" href="task.php">Task Assignment</a>
+
     </div>
 
     <div class="content">

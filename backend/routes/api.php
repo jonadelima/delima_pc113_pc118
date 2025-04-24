@@ -13,12 +13,23 @@ use App\Http\Controllers\TaskController;
 
 
 
-Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/tasks', [TaskController::class, 'index']);
-    Route::post('/tasks', [TaskController::class, 'store']);
-    Route::put('/tasks/{id}', [TaskController::class, 'update']);
-    Route::delete('/tasks/{id}', [TaskController::class, 'destroy']);
-});
+Route::apiResource('tasks', TaskController::class);
+Route::get('/tasks', [TaskController::class, 'index']);
+Route::post('/tasks', [TaskController::class, 'store']);
+Route::delete('/tasks/{id}', [TaskController::class, 'destroy']);
+Route::put('/tasks/{id}', [TaskController::class, 'update']);
+
+
+
+
+
+
+// Route::middleware('auth:sanctum')->group(function () {
+//     Route::get('/tasks', [TaskController::class, 'index']);
+//     Route::post('/tasks', [TaskController::class, 'store']);
+//     Route::put('/tasks/{id}', [TaskController::class, 'update']);
+//     Route::delete('/tasks/{id}', [TaskController::class, 'destroy']);
+// });
 
 
 Route::post('/login', [AuthController::class, 'login']);
@@ -26,7 +37,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/users', [UserController::class, 'index']);
     Route::post('/users', [UserController::class, 'store']);
     Route::put('/users/{id}', [UserController::class, 'update']);
-    Route::delete('/users/{id}', [UserController::class, 'destroy']);
+    Route::delete('/users/{id}', [UserController::class, 'delete']);
 });
 
 Route::get('/employees', [EmployeeController::class, 'index']);
