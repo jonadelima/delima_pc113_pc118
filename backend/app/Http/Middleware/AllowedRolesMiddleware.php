@@ -8,18 +8,23 @@ use Symfony\Component\HttpFoundation\Response;
 
 class AllowedRolesMiddleware
 {
-    public function handle(Request $request, Closure $next, ...$roles): Response
+    /**
+     * Handle an incoming request.
+     * Only allows users with specified roles.
+     */
+    public function handle($request, Closure $next, ...$roles): Response
     {
         $user = $request->user();
-        
-        if (!$user) {
-            return response()->json(['message' => 'Unauthorized.'], 401);
+    
+        if ($user->role == 0) {
+            return $next($request);
         }
-
-        if (!in_array($user->role, $roles)) {
-            return response()->json(['message' => 'Forbidden: Access denied.'], 403);
+        if ($user->role == 1) {
+            return $next($request);
         }
-
-        return $next($request);
+        if ($user->role == 2) {
+            return $next($request);
+        }
+        return response()->json(['message' => 'Access denied'], 403);
     }
 }

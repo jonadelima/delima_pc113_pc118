@@ -6,18 +6,23 @@ use Illuminate\Support\Facades\Schema;
 
 class CreateTasksTable extends Migration
 {
-    public function up() {
+    public function up()
+    {
         Schema::create('tasks', function (Blueprint $table) {
             $table->id();
             $table->string('title');
             $table->text('description');
-            $table->string('assigned_by');
+            $table->string('subject');
+            $table->string('type');
+            $table->string('assigned_to');
             $table->date('due_date');
+            $table->string('file')->nullable();
             $table->timestamps();
         });
     }
 
-    public function down() {
+    public function down()
+    {
         Schema::dropIfExists('tasks');
     }
 }

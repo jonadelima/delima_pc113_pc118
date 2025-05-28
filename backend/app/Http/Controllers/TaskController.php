@@ -1,37 +1,55 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Models\Task;
 use Illuminate\Http\Request;
+use App\Models\Task;
 
 class TaskController extends Controller
 {
-    public function index() {
+    public function index()
+    {
         return Task::all();
     }
 
-    public function store(Request $request) {
-        $task = new Task;
-        $task->title = $request->title;
-        $task->description = $request->description;
-        $task->assigned_by = 'Admin';  // or get from logged in user
-        $task->due_date = $request->due_date;
-        $task->save();
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'title' => 'required|string',
+            'description' => 'required|string',
+            'subject' => 'required|string',
+            'type' => 'required|string',
+            'assigned_to' => 'required|string',
+            'due_date' => 'required|date',
+            'file' => 'nullable|file',
+        ]);
 
-        return response()->json(['message' => 'Task added successfully'], 201);
+        if ($request->hasFile('file')) {
+            $validated['file'] = $request->file('file')->store('tasks', 'public');
+        }
+
+        $task = Task::create($validated);
+
+        return response()->json(['message' => 'Task created successfully', 'task' => $task], 201);
     }
 
-    public function update(Request $request, $id) {
-        $task = Task::findOrFail($id);
-        $task->update($request->all());
-        return response()->json(['message' => 'Task updated successfully']);
-    }
-    
+    public function update(Request $request, Task $task)
+    {
+        $validated = $request->validate([
+            'title' => 'required|string',
+            'description' => 'required|string',
+            'subject' => 'required|string',
+            'type' => 'required|string',
+            'assigned_to' => 'required|string',
+            'due_date' => 'required|date',
+            'file' => 'nullable|file',
+        ]);
 
-    public function destroy($id) {
-        $task = Task::findOrFail($id);
-        $task->delete();
+        if ($request->hasFile('file')) {
+            $validated['file'] = $request->file('file')->store('tasks', 'public');
+        }
 
-        return response()->json(['message' => 'Task deleted successfully']);
+        $task->update($validated);
+
+        return response()->json(['message' => 'Task updated successfully', 'task' => $task]);
     }
 }
