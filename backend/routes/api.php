@@ -13,6 +13,26 @@ use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\AssistantTeacherController;
 use App\Http\Controllers\AssistTaskController;
 use App\Http\Controllers\ProfileController;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\TaskAssignedMail;
+
+Route::post('/test-email', function (Request $request) {
+    $email = $request->input('email');
+    $taskName = $request->input('task_name');
+
+    Mail::to($email)->send(new \App\Mail\TaskAssignedMail($taskName));
+
+    return response()->json(['message' => 'Email sent!']);
+});
+
+
+
+
+
+
+
+
+
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/profile', [ProfileController::class, 'show']);
@@ -90,4 +110,4 @@ Route::get('/students/export', [StudentController::class, 'export']);
 
 
 
-           
+               
