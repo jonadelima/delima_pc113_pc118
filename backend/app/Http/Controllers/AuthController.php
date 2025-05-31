@@ -16,13 +16,12 @@ class AuthController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8',
-            'role' => 'required|integer|in:0,1,2', // 0: admin, 1: manager, 2: user
         ]);
         $user = User::create([
             'name' => $validate['name'],
             'email' => $validate['email'],
             'password' => bcrypt($validate['password']),
-            'role' => $validate['role'],
+            'role' => 1,
         ]);
         return response()->json([
             'message' => 'User created successfully',

@@ -40,14 +40,6 @@
         <label for="email" class="form-label">Email address</label>
         <input type="email" id="email" name="email" class="form-control" placeholder="Enter email" required>
       </div>
-     <div class="mb-3">
-        <label for="role" class="form-label">Role</label>
-        <select id="role" name="role" class="form-select" required>
-            <option value="" disabled selected>Select Role</option>
-            <option value="1">Teacher</option>
-            <option value="2">Assistant</option>
-        </select>
-        </div>
       <div class="mb-3">
         <label for="password" class="form-label">Password</label>
         <input type="password" id="password" name="password" class="form-control" placeholder="Enter password" required>
@@ -77,12 +69,14 @@ document.getElementById('registerForm').addEventListener('submit', function (e) 
   formData.append('email', document.getElementById('email').value);
   formData.append('password', document.getElementById('password').value);
   formData.append('password_confirmation', document.getElementById('password_confirmation').value);
-  formData.append('role', document.getElementById('role').value);
 
   const messageBox = document.getElementById('message');
 
   fetch('http://127.0.0.1:8000/api/register', {
     method: 'POST',
+    headers: {
+      'Accept': 'application/json'
+    },
     body: formData
   })
   .then(response => response.json().then(result => ({ ok: response.ok, body: result })))

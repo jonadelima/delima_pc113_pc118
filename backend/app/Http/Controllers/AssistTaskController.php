@@ -3,15 +3,15 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\AssistTask;
 use Illuminate\Support\Facades\Storage;
-use App\Models\Task;
 
-class TaskController extends Controller
+class AssistTaskController extends Controller
 {
     // GET: /api/tasks
     public function index()
     {
-        return Task::all();
+        return AssistTask::all();
     }
 
     // POST: /api/tasks
@@ -33,7 +33,7 @@ class TaskController extends Controller
             $filePath = $request->file('file')->store('tasks', 'public');
         }
 
-        $task = Task::create([
+        $task = AssistTask::create([
             'title'        => $request->title,
             'description'  => $request->description,
             'subject'      => $request->subject,
@@ -49,7 +49,7 @@ class TaskController extends Controller
     // PUT or POST: /api/tasks/{id}
     public function update(Request $request, $id)
     {
-        $task = Task::findOrFail($id);
+        $task = AssistTask::findOrFail($id);
 
         $request->validate([
             'title'        => 'required|string|max:255',
@@ -85,7 +85,7 @@ class TaskController extends Controller
     // DELETE: /api/tasks/{id}
     public function destroy($id)
     {
-        $task = Task::findOrFail($id);
+        $task = AssistTask::findOrFail($id);
 
         // Delete file if exists
         if ($task->file && Storage::disk('public')->exists($task->file)) {
@@ -96,4 +96,6 @@ class TaskController extends Controller
 
         return response()->json(['message' => 'Task deleted successfully']);
     }
+
 }
+      

@@ -15,9 +15,9 @@
     <a href="assistanttask.php" class="<?= $currentPage == 'assistanttask.php' ? 'active text-primary fw-bold' : '' ?>">
       <i class="fas fa-users me-2"></i> Task List
     </a>
-    <a href="assistantreminders.php" class="<?= $currentPage == 'assistantreminders.php' ? 'active text-primary fw-bold' : '' ?>">
+    <!-- <a href="assistantreminders.php" class="<?= $currentPage == 'assistantreminders.php' ? 'active text-primary fw-bold' : '' ?>">
       <i class="fas fa-tasks me-2"></i> Reminders
-    </a>
+    </a> -->
     <a href="assistantsubmission.php" class="<?= $currentPage == 'assistantsubmission.php' ? 'active text-primary fw-bold' : '' ?>">
       <i class="fas fa-user-tie me-2"></i> Submissions
     </a>

@@ -9,7 +9,93 @@
     }
 </style>
 <div class="content mt-5">
-  <div class="d-flex justify-content-between align-items-center mb-3">
-    <h2><i class="bi bi-card-checklist me-2"></i>Profile</h2>
+  <div class="container mt-1">
+    <div class="card border-0 rounded-4 bg-transparent">
+      <div class="card-body p-3">
+        <div class="d-flex align-items-center mb-4">
+          <div class="me-3">
+          <i class="fas fa-user-circle fa-3x" style="color: #808080;"></i>
+          </div>
+          <div>
+            <h3 class="card-title mb-0" style="color: #808080;">User Profile</h3>
+            <p class=" mb-0" style="color: #808080;">Personal Information</p>
+          </div>
+        </div>
+
+        <hr class="border-light">
+
+        <div id="profileInfo" class="row">
+         
+        </div>
+
+  
+        <button class="btn btn-primary mt-3" data-bs-toggle="modal" data-bs-target="#editProfileModal">Edit Profile</button>
+
+      </div>
+    </div>
   </div>
 </div>
+<!-- Edit Profile Modal -->
+<div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content rounded-4">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editProfileModalLabel">Edit Profile</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="editProfileForm">
+          <div class="mb-3">
+            <label for="editName" class="form-label">Full Name</label>
+            <input type="text" class="form-control" id="editName" required>
+          </div>
+          <div class="mb-3">
+            <label for="editEmail" class="form-label">Email</label>
+            <input type="email" class="form-control" id="editEmail" required>
+          </div>
+          <button type="submit" class="btn btn-primary w-100">Save Changes</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script>
+ document.addEventListener("DOMContentLoaded", function () {
+  fetch("http://127.0.0.1:8000/api/profile", {
+    method: "GET",
+    headers: {
+      "Authorization": `Bearer ${localStorage.getItem("auth_token")}`,
+      "Accept": "application/json"
+    }
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error("Failed to fetch user profile.");
+    }
+    return response.json();
+  })
+  .then(data => {
+    const container = document.getElementById("profileInfo");
+
+    const profileHTML = `
+      <div class="col-md-3 mb-4">
+        <strong style="color: #808080;">Full Name:</strong>
+        <p style="color: #808080;">${data.name}</p>
+      </div>
+      <div class="col-md-3 mb-3">
+        <strong style="color: #808080;">Email:</strong>
+        <p style="color: #808080;">${data.email}</p>
+      </div>
+    `;
+
+    container.innerHTML = profileHTML;
+  })
+  .catch(error => {
+    console.error("Error:", error);
+    document.getElementById("profileInfo").innerHTML = "<p class='text-danger'>Failed to load profile information.</p>";
+  });
+});
+
+</script>
