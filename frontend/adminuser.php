@@ -211,21 +211,23 @@
           return;
         }
 
-        users.forEach((user, index) => {
-          const row = `
-            <tr>
-              <td>${index + 1}</td>
-              <td>${user.name}</td>
-              <td>${user.email}</td>
-              <td>${getRoleName(user.role)}</td>
-              <td>
-                <button class="btn btn-warning btn-sm" onclick='editUser(${JSON.stringify(user)})'>Edit</button>
-                <button class="btn btn-danger btn-sm" onclick="deleteUser(${user.id})">Delete</button>
-              </td>
-            </tr>
-          `;
-          tableBody.innerHTML += row;
-        });
+       users.forEach((user, index) => {
+  if (parseInt(user.role) === 0) return; // Skip Admins
+
+  const row = `
+    <tr>
+      <td>${index + 1}</td>
+      <td>${user.name}</td>
+      <td>${user.email}</td>
+      <td>${getRoleName(user.role)}</td>
+      <td>
+        <button class="btn btn-warning btn-sm" onclick='editUser(${JSON.stringify(user)})'>Edit</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteUser(${user.id})">Delete</button>
+      </td>
+    </tr>
+  `;
+  tableBody.innerHTML += row;
+});
       })
       .catch(err => {
         console.error("❌ Error while fetching users:", err.message);

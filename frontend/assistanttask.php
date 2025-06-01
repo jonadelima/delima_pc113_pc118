@@ -15,7 +15,11 @@
 
   <style>
     body { background-color: #f8f9fa; }
-    .content { padding: 20px; }
+    .content { 
+      padding: 20px; 
+        width:78%;
+      font-size:12px;
+    }
     .topbar {
       background-color: #fff;
       padding: 15px;

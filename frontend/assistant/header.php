@@ -30,7 +30,7 @@
         src: url('fonts/BodoniFLF-Roman.ttf') format('truetype');
       }
     body{
-      background-color: #1c1c27;
+      background-color: white;
       font-family: 'Inter', sans-serif;
     }
     .sidebar {
@@ -39,7 +39,7 @@
       top: 0;
       left: 0;
       width: 250px;
-      background-color: #21242e;
+      background-color: rgb(87, 10, 73);
       padding-top: 20px;
       z-index: 1;
       box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.4);
@@ -62,7 +62,7 @@
     }
 
     .navbar {
-      background-color: #21242e;
+      background-color: rgb(87, 10, 73);
       position: fixed; 
       top:0; 
       left: 250px; 
@@ -92,7 +92,7 @@
     }
     .logo-container p {
       font-size: 20px;
-      color: gray;
+      color: white;
       margin-top: 5px;
       margin-left: -1px;
       letter-spacing: 15px;

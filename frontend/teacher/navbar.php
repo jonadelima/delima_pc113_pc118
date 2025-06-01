@@ -20,7 +20,7 @@
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
               <li><a class="dropdown-item" href="#" id="logoutBtn">Logout</a></li>
             </ul>
-          </li>
+          </li>  
         </ul>
       </div>
     </div>

@@ -2,53 +2,47 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Student;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Response;
+use App\Imports\StudentImport;
+use App\Exports\StudentExport;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Models\Student;
+use Exception;
 
 class StudentController extends Controller
 {
-    // Get all students
-    public function index()
-    {
-        return response()->json(Student::all());
-    }
-
-    // Import CSV
-    public function import(Request $request)
-    {
-        $file = $request->file('file');
-        if (!$file->isValid()) return response()->json(['error' => 'Invalid file'], 400);
-
-        $handle = fopen($file, 'r');
-        $header = fgetcsv($handle);
-
-        while (($data = fgetcsv($handle)) !== false) {
-            Student::create([
-    'student_id' => $data[0],
-    'name'       => $data[1],
-    'course'     => $data[2],
-    'status'     => $data[3] ?? 'Not Submitted',
-]);
-
-        }
-
-        return response()->json(['message' => 'Import successful']);
-    }
-
-    // Export CSV
-    public function export()
+    public function getStudents()
     {
         $students = Student::all();
-        $csv = "Student ID,Name,Course,Status\n";
+        return response()->json($students);
+    }
 
-        foreach ($students as $student) {
-    $csv .= "{$student->student_id},{$student->name},{$student->course},{$student->status}\n";
-}
+    public function importStudents(Request $request)
+    {
+        try{
+            $request->validate([
+                'file' => 'required|mimes:xlsx,csv,xls'
+            ]);
+            $import = new StudentImport;
+            Excel::import($import, $request->file('file'));
 
-        return response($csv)
-            ->header('Content-Type', 'text/csv')
-            ->header('Content-Disposition', 'attachment; filename="students.csv"');
+            foreach ($import->rows as $row) {
+                Student::create([
+                    'student_id' => $row['student_id'],
+                    'name'       => $row['name'],
+                    'course'     => $row['course'],
+                    'status'     => $row['status'] ?? 'active', // Default to 'active' if not provided
+                ]);
+            }
+    
+            return response()->json(['message' => 'Students imported successfully']);
+        }catch (Exception $e) {
+            return response()->json(['error' => 'Failed to import students: ' . $e->getMessage()], 500);
+        }
+    }
+
+    public function exportStudents()
+    {
+        return Excel::download(new StudentExport, 'students.xlsx');
     }
 }

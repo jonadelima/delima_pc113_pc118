@@ -7,28 +7,11 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\UserController;
 use App\Http\Middleware\AllowedRolesMiddleware;
-use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\AssistantTeacherController;
 use App\Http\Controllers\AssistTaskController;
 use App\Http\Controllers\ProfileController;
-use Illuminate\Support\Facades\Mail;
-use App\Mail\TaskAssignedMail;
-
-Route::post('/test-email', function (Request $request) {
-    $email = $request->input('email');
-    $taskName = $request->input('task_name');
-
-    Mail::to($email)->send(new \App\Mail\TaskAssignedMail($taskName));
-
-    return response()->json(['message' => 'Email sent!']);
-});
-
-
-
-
-
 
 
 
@@ -81,24 +64,22 @@ Route::middleware('auth:sanctum','role:2')->group(function(){
 
 
 
-Route::get('/tasks', [TaskController::class, 'index']);       // List all tasks
-Route::post('/tasks', [TaskController::class, 'store']);      // Create a new task
-Route::put('/tasks/{id}', [TaskController::class, 'update']); // Update task by ID (using POST instead of PUT for easier frontend use)
-Route::delete('/tasks/{id}', [TaskController::class, 'destroy']); // Delete task by ID
+Route::get('/tasks', [TaskController::class, 'index']);      
+Route::post('/tasks', [TaskController::class, 'store']);      
+Route::put('/tasks/{id}', [TaskController::class, 'update']); 
+Route::delete('/tasks/{id}', [TaskController::class, 'destroy']); 
 
 
 
-Route::get('/assisttasks', [AssistTaskController::class, 'index']);       // List all tasks
-Route::post('/assisttasks', [AssistTaskController::class, 'store']);      // Create a new task
-Route::post('/assisttasks/{id}', [AssistTaskController::class, 'update']); // Update task by ID (using POST instead of PUT for easier frontend use)
-Route::delete('/assisttasks/{id}', [AssistTaskController::class, 'destroy']); // Delete task by ID
+Route::get('/assisttasks', [AssistTaskController::class, 'index']);       
+Route::post('/assisttasks', [AssistTaskController::class, 'store']);     
+Route::post('/assisttasks/{id}', [AssistTaskController::class, 'update']);  
+Route::delete('/assisttasks/{id}', [AssistTaskController::class, 'destroy']);
 
 
-Route::get('/students', [StudentController::class, 'index']);
-Route::post('/students/import', [StudentController::class, 'import']);
-Route::get('/students/export', [StudentController::class, 'export']);
-
-
+Route::get('/students', [StudentController::class, 'getStudents']);
+Route::post('/students/import', [StudentController::class, 'importStudents']);
+Route::get('/students/export', [StudentController::class, 'exportStudents']);
 
 
 

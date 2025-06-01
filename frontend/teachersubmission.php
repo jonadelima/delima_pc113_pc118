@@ -23,7 +23,6 @@
     }
   }
 
-  /* PRINT ONLY: Hide everything except the table */
   @media print {
     body * {
       visibility: hidden;
@@ -37,16 +36,6 @@
       width: 100%;
     }
 
-    .content .card.shadow table {
-      width: 100%;
-    }
-
-    .content .card.shadow,
-    .content .card.shadow * {
-      visibility: visible;
-    }
-
-    /* Optional: remove borders and colors for cleaner print */
     table, th, td {
       border: 1px solid black !important;
       color: black !important;
@@ -64,12 +53,11 @@
     <h2>Student Submissions</h2>
   </div>
 
-  <!-- Import, Export, and Print Controls -->
   <div class="card p-3 mb-4">
     <div class="row g-2 align-items-center">
       <div class="col-md-5 col-sm-12">
-        <form id="importForm" action="http://localhost:8000/api/students/import" method="POST" enctype="multipart/form-data" target="hiddenFrame" class="d-flex flex-wrap gap-2">
-          <input type="file" name="file" accept=".csv" class="form-control form-control-sm" required>
+        <form id="importForm" class="d-flex flex-wrap gap-2" enctype="multipart/form-data">
+          <input id="file" type="file" name="file" accept=".csv,.xls,.xlsx" class="form-control form-control-sm" required>
           <button type="submit" class="btn btn-success btn-sm">Import</button>
         </form>
       </div>
@@ -80,72 +68,81 @@
     </div>
   </div>
 
-  <!-- Hidden iframe for import -->
-  <iframe name="hiddenFrame" style="display:none;"></iframe>
-
-  <!-- Student Submission Table -->
   <div class="card shadow p-4">
     <div class="table-responsive">
       <table class="table table-bordered table-hover mb-0">
         <thead class="table-dark">
-  <tr>
-    <th>#</th>
-    <th>Student ID</th>
-    <th>Name</th>
-    <th>Course</th>
-    <th>Status</th> <!-- NEW -->
-  </tr>
-</thead>
-
+          <tr>
+            <th>#</th>
+            <th>Student ID</th>
+            <th>Name</th>
+            <th>Course</th>
+            <th>Status</th>
+          </tr>
+        </thead>
         <tbody id="student-table-body">
-          <!-- JavaScript will populate this -->
+          <!-- JavaScript populates here -->
         </tbody>
       </table>
     </div>
   </div>
 </div>
 
-<!-- JavaScript to fetch student data -->
 <script>
-  document.addEventListener('DOMContentLoaded', function () {
-    fetchStudents();
+  // Import Handler
+  document.getElementById('importForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    let file = document.getElementById('file').files[0];
+    const formData = new FormData();
+    formData.append('file', file)
 
-    // Re-fetch after importing
-    document.getElementById('importForm').addEventListener('submit', function () {
-      setTimeout(fetchStudents, 1000); // slight delay to wait for server
+    fetch('http://localhost:8000/api/students/import', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Authorization': 'Bearer ' + localStorage.getItem('token') // Assuming you store the token in localStorage
+      },
+      body: formData,
+      processData: false,
+      contentType: false
+    })
+    .then(res => res.json())
+    .then(data => {
+      console.log(data);
+      alert(data.message);
+      // loadStudents();
+    })
+    .catch(error => {
+      console.error('Import failed:', error);
+      alert('Import failed!');
     });
   });
 
-  function fetchStudents() {
+  // Load Students
+  function loadStudents() {
     fetch('http://localhost:8000/api/students')
-      .then(response => response.json())
+      .then(res => res.json())
       .then(data => {
         const tbody = document.getElementById('student-table-body');
         tbody.innerHTML = '';
 
-        if (data.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="4" class="text-center">No students found.</td></tr>';
-          return;
-        }
-
         data.forEach((student, index) => {
-  const row = `
-    <tr>
-      <td>${index + 1}</td>
-      <td>${student.student_id}</td>
-      <td>${student.name}</td>
-      <td>${student.course}</td>
-      <td>${student.status}</td> <!-- NEW -->
-    </tr>
-  `;
-  tbody.innerHTML += row;
-});
-
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td>${index + 1}</td>
+            <td>${student.student_id}</td>
+            <td>${student.name}</td>
+            <td>${student.course}</td>
+            <td>${student.status}</td>
+          `;
+          tbody.appendChild(row);
+        });
       })
-      .catch(error => {
-        console.error('Fetch error:', error);
-        const tbody = document.getElementById('student-table-body');
-        tbody.innerHTML = '<tr><td colspan="4" class="text-danger text-center">Failed to load student data.</td></tr>';
+      .catch(err => {
+        console.error('Failed to load students', err);
       });
   }
+
+  // Initial Load
+  loadStudents();
 </script>

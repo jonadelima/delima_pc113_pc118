@@ -14,8 +14,12 @@
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
   <style>
-    body { background-color: #f8f9fa; }
-    .content { padding: 20px; }
+    body { background-color: #f8f9fa;  }
+    .content { 
+      padding: 20px; 
+      width:78%;
+      font-size:12px;
+    }
     .topbar {
       background-color: #fff;
       padding: 15px;
@@ -25,6 +29,7 @@
       .content { margin-left: 250px; }
       .topbar { margin-left: 250px; }
     }
+    
   </style>
 </head>
 <body>
